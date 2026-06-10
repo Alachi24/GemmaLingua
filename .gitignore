@@ -1,0 +1,39 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Data / Models (user-provided)
+data/raw/*
+!data/raw/.gitkeep
+!data/raw/monolingual
+data/raw/monolingual/*
+!data/raw/monolingual/.gitkeep
+!data/raw/monolingual/README.md
+data/processed/*
+!data/processed/.gitkeep
+models/adapters/*
+!models/adapters/.gitkeep
+models/base/*
+!models/base/.gitkeep
+
+# Logs
+logs/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
