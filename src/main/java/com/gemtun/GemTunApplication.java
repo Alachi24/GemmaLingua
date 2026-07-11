@@ -46,7 +46,6 @@ public class GemTunApplication implements Callable<Integer> {
         log.info("Loading configuration from {}", configPath);
         var loader = new ConfigLoader(configPath);
         var config = loader.getConfig();
-
         log.info("Pipeline: {}", config.getPipeline().getName());
         log.info("Model: {}", config.getModel().getId());
 
