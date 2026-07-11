@@ -16,6 +16,11 @@ public class TrainingConfig {
     private double loraDropout = 0.05;
     private boolean bf16 = true;
 
+    // Masking-stage only: span-infilling knobs. Ignored by the lm/translation stages.
+    private double maskRate = 0.15;
+    private int meanSpan = 3;
+    private int maxSpans = 5;
+
     @JsonProperty("output_dir")
     public String getOutputDir() { return outputDir; }
     @JsonProperty("output_dir")
@@ -70,4 +75,19 @@ public class TrainingConfig {
     public boolean isBf16() { return bf16; }
     @JsonProperty("bf16")
     public void setBf16(boolean v) { bf16 = v; }
+
+    @JsonProperty("mask_rate")
+    public double getMaskRate() { return maskRate; }
+    @JsonProperty("mask_rate")
+    public void setMaskRate(double v) { maskRate = v; }
+
+    @JsonProperty("mean_span")
+    public int getMeanSpan() { return meanSpan; }
+    @JsonProperty("mean_span")
+    public void setMeanSpan(int v) { meanSpan = v; }
+
+    @JsonProperty("max_spans")
+    public int getMaxSpans() { return maxSpans; }
+    @JsonProperty("max_spans")
+    public void setMaxSpans(int v) { maxSpans = v; }
 }

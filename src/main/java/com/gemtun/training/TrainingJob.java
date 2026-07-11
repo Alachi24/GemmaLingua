@@ -15,7 +15,8 @@ public class TrainingJob {
 
     public enum Type {
         LM("python/train_lm.py"),
-        TRANSLATION("python/train_translation.py");
+        TRANSLATION("python/train_translation.py"),
+        MASKING("python/train_masking.py");
 
         private final String scriptPath;
         Type(String scriptPath) { this.scriptPath = scriptPath; }
@@ -24,7 +25,7 @@ public class TrainingJob {
 
     private final Type type;
     private final TrainingConfig config;
-    private final String dataPath;
+    private final List<String> dataPaths;
     private final String modelId;
     private final String hfToken;
     private final String cacheDir;
@@ -34,10 +35,10 @@ public class TrainingJob {
     private LanguageConfig language;
     private String initAdapter;
 
-    public TrainingJob(Type type, TrainingConfig config, String dataPath, String modelId, String hfToken, String cacheDir) {
+    public TrainingJob(Type type, TrainingConfig config, List<String> dataPaths, String modelId, String hfToken, String cacheDir) {
         this.type = type;
         this.config = config;
-        this.dataPath = dataPath;
+        this.dataPaths = dataPaths;
         this.modelId = modelId;
         this.hfToken = hfToken;
         this.cacheDir = cacheDir;
@@ -64,7 +65,9 @@ public class TrainingJob {
 
         List<String> args = new ArrayList<>();
         args.add("--model-id"); args.add(resolvedModelId);
-        args.add("--data"); args.add(dataPath);
+        for (String dp : dataPaths) {
+            args.add("--data"); args.add(dp);
+        }
         args.add("--output"); args.add(config.getOutputDir());
         args.add("--epochs"); args.add(String.valueOf(config.getNumTrainEpochs()));
         args.add("--batch-size"); args.add(String.valueOf(config.getPerDeviceTrainBatchSize()));
@@ -86,6 +89,11 @@ public class TrainingJob {
             args.add("--target-col"); args.add(language.getTargetCode());
             args.add("--source-name"); args.add(language.getSourceName());
             args.add("--target-name"); args.add(language.getTargetName());
+        }
+        if (type == Type.MASKING) {
+            args.add("--mask-rate"); args.add(String.valueOf(config.getMaskRate()));
+            args.add("--mean-span"); args.add(String.valueOf(config.getMeanSpan()));
+            args.add("--max-spans"); args.add(String.valueOf(config.getMaxSpans()));
         }
         if (initAdapter != null && !initAdapter.isBlank()) {
             log.info("Continuing training from adapter at {}", initAdapter);

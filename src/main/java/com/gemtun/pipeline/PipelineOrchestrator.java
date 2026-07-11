@@ -17,6 +17,7 @@ public class PipelineOrchestrator {
         register(new ValidateDataStage());
         register(new TrainLanguageModelStage());
         register(new TrainTranslationStage());
+        register(new TrainMaskingStage());
         register(new ExportModelStage());
     }
 

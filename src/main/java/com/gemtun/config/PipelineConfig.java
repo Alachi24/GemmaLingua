@@ -146,11 +146,16 @@ public class PipelineConfig {
         private TrainingConfig lm;
         @JsonProperty("translation")
         private TrainingConfig translation;
+        @JsonProperty("masking")
+        private TrainingConfig masking;
 
         public TrainingConfig getLm() { return lm; }
         public void setLm(TrainingConfig v) { lm = v; }
 
         public TrainingConfig getTranslation() { return translation; }
         public void setTranslation(TrainingConfig v) { translation = v; }
+
+        public TrainingConfig getMasking() { return masking; }
+        public void setMasking(TrainingConfig v) { masking = v; }
     }
 }

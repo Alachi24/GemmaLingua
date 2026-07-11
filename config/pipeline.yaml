@@ -1,0 +1,86 @@
+pipeline:
+  name: "Igbo Gemma 4 E4B Fine-Tuning Pipeline"
+  stages:
+    - cache-base-model
+    - validate-data
+    - train-language-model
+    - train-translation
+    - train-masking
+    - export-model
+
+# Language definition — drives the translation prompt template and CSV column
+# names. Swap these four fields to retarget the whole pipeline at another
+# Nigerian language (Yoruba, Hausa, ...) without touching code.
+language:
+  source_code: "en"        # CSV column holding the source text
+  source_name: "English"   # human name used in the prompt
+  target_code: "ig"        # CSV column holding the target text
+  target_name: "Igbo"      # human name used in the prompt
+
+model:
+  id: "google/gemma-4-E4B-it"
+  hf_token: ${HF_TOKEN}
+  output_base: "./models/adapters"
+  cache_dir: "./models/base"
+
+data:
+  raw_dir: "./data/raw"
+  processed_dir: "./data/processed"
+
+  # --- Monolingual data (stage: train-language-model) ---
+  # Drop any number of .txt/.csv files into this directory and they are all
+  # picked up automatically. This is the endpoint for your monolingual corpus.
+  lm_dir: "data/raw/monolingual"
+  lm_files: []                   # optional explicit files (merged with lm_dir)
+  lm_file: ""                    # single-file fallback
+
+  # --- Translation data (stage: train-translation) ---
+  translation_dir: ""            # optional directory of en->ig CSVs
+  translation_files:             # or list en-ig .csv files explicitly
+    - data/raw/igbo_translation_train.csv
+  translation_file: ""           # single-file fallback
+
+training:
+  lm:
+    output_dir: "./models/adapters/igbo-gemma4-lm-finetuned"
+    num_train_epochs: 3
+    per_device_train_batch_size: 1
+    gradient_accumulation_steps: 8
+    learning_rate: 0.0002
+    logging_steps: 50
+    save_strategy: "epoch"
+    lora_r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    bf16: true
+
+  translation:
+    output_dir: "./models/adapters/igbo-gemma4-finetuned"
+    num_train_epochs: 3
+    per_device_train_batch_size: 1
+    gradient_accumulation_steps: 8
+    learning_rate: 0.0002
+    logging_steps: 50
+    save_strategy: "epoch"
+    lora_r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    bf16: true
+
+  # Span-infilling stage. Multi-span blanks are derived from the target (ig)
+  # column of the translation CSV(s); chains on top of the translation adapter.
+  masking:
+    output_dir: "./models/adapters/igbo-gemma4-masking-finetuned"
+    num_train_epochs: 3
+    per_device_train_batch_size: 1
+    gradient_accumulation_steps: 8
+    learning_rate: 0.0002
+    logging_steps: 50
+    save_strategy: "epoch"
+    lora_r: 16
+    lora_alpha: 32
+    lora_dropout: 0.05
+    bf16: true
+    mask_rate: 0.15        # fraction of words blanked per sentence
+    mean_span: 3           # average blanked-span length (words)
+    max_spans: 5           # cap on number of blanks per sentence

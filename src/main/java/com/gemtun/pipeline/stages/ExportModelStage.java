@@ -42,6 +42,14 @@ public class ExportModelStage implements Stage {
                 }
             }
 
+            if (training.getMasking() != null) {
+                Path maskSrc = Path.of(training.getMasking().getOutputDir());
+                if (Files.exists(maskSrc)) {
+                    copyDirectory(maskSrc, exportDir.resolve("masking"));
+                    log.info("Copied masking adapter to {}", exportDir.resolve("masking"));
+                }
+            }
+
             log.info("Model export complete at {}", exportDir);
             return new StageResult(name(), true, "Models exported to " + exportDir, System.currentTimeMillis() - start);
 

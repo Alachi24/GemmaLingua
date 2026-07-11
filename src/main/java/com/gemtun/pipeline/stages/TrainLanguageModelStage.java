@@ -1,12 +1,10 @@
 package com.gemtun.pipeline.stages;
 
 import com.gemtun.config.TrainingConfig;
-import com.gemtun.data.DatasetConverter;
 import com.gemtun.pipeline.*;
 import com.gemtun.training.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.file.Path;
 import java.util.List;
 
 public class TrainLanguageModelStage implements Stage {
@@ -27,14 +25,13 @@ public class TrainLanguageModelStage implements Stage {
                 return new StageResult(name(), false, "No LM data files configured", System.currentTimeMillis() - start);
             }
 
-            Path prepared = new DatasetConverter().prepareLmFiles(ctx.getConfig());
             TrainingConfig lmConfig = ctx.getConfig().getTraining().getLm();
             var modelCfg = ctx.getConfig().getModel();
 
             var job = new TrainingJob(
                 TrainingJob.Type.LM,
                 lmConfig,
-                prepared.toString(),
+                lmFiles,
                 modelCfg.getId(),
                 modelCfg.getHfToken(),
                 modelCfg.getCacheDir()

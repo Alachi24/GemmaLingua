@@ -39,6 +39,7 @@ public class GemTunApplication implements Callable<Integer> {
             System.out.println("  validate-data        - Validate input data files");
             System.out.println("  train-language-model - Fine-tune on Igbo-only text");
             System.out.println("  train-translation    - Fine-tune on EN-IG pairs");
+            System.out.println("  train-masking        - Fine-tune on span-infilling (masked Igbo)");
             System.out.println("  export-model         - Copy trained adapters to final dir");
             return 0;
         }

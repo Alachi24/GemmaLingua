@@ -2,13 +2,11 @@ package com.gemtun.pipeline.stages;
 
 import com.gemtun.config.LanguageConfig;
 import com.gemtun.config.TrainingConfig;
-import com.gemtun.data.DatasetConverter;
 import com.gemtun.model.ModelManager;
 import com.gemtun.pipeline.*;
 import com.gemtun.training.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.file.Path;
 import java.util.List;
 
 public class TrainTranslationStage implements Stage {
@@ -29,7 +27,6 @@ public class TrainTranslationStage implements Stage {
                 return new StageResult(name(), false, "No translation data files configured", System.currentTimeMillis() - start);
             }
 
-            Path prepared = new DatasetConverter().prepareTranslationFiles(ctx.getConfig());
             TrainingConfig transConfig = ctx.getConfig().getTraining().getTranslation();
             var modelCfg = ctx.getConfig().getModel();
 
@@ -41,7 +38,7 @@ public class TrainTranslationStage implements Stage {
             var job = new TrainingJob(
                 TrainingJob.Type.TRANSLATION,
                 transConfig,
-                prepared.toString(),
+                transFiles,
                 modelCfg.getId(),
                 modelCfg.getHfToken(),
                 modelCfg.getCacheDir()
